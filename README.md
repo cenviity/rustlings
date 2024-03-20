@@ -1,3 +1,11 @@
+# Hi there!
+
+This is my fork with solutions to the Rustlings exercises. The `main` branch tracks the [upstream repo](https://github.com/rust-lang/rustlings).
+
+— Vincent Ging Ho Yim [@cenviity](https://github.com/cenviity)
+
+---
+
 <div class="oranda-hide">
 
 # rustlings 🦀❤️
