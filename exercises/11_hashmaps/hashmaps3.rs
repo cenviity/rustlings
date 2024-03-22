@@ -15,14 +15,20 @@
 // Execute `rustlings hint hashmaps3` or use the `hint` watch subcommand for a
 // hint.
 
-// I AM NOT DONE
-
 use std::collections::HashMap;
 
 // A structure to store the goal details of a team.
 struct Team {
     goals_scored: u8,
     goals_conceded: u8,
+}
+
+// A structure to store the results of a match.
+struct MatchResult {
+    team_1_name: String,
+    team_1_score: u8,
+    team_2_name: String,
+    team_2_score: u8,
 }
 
 fn build_scores_table(results: String) -> HashMap<String, Team> {
@@ -41,29 +47,49 @@ fn build_scores_table(results: String) -> HashMap<String, Team> {
         // goals scored by team_2 will be the number of goals conceded by
         // team_1.
 
-        let team_1 = scores
-            .entry(team_1_name)
-            .and_modify(|team| {
-                team.goals_scored += team_1_score;
-                team.goals_conceded += team_2_score;
-            })
-            .or_insert(Team {
-                goals_scored: team_1_score,
-                goals_conceded: team_2_score,
-            });
+        let match_result = MatchResult {
+            team_1_name,
+            team_1_score,
+            team_2_name,
+            team_2_score,
+        };
 
-        let team_2 = scores
-            .entry(team_2_name)
-            .and_modify(|team| {
-                team.goals_scored += team_2_score;
-                team.goals_conceded += team_1_score;
-            })
-            .or_insert(Team {
-                goals_scored: team_2_score,
-                goals_conceded: team_1_score,
-            });
+        update_match_scores(&mut scores, match_result);
     }
     scores
+}
+
+fn update_match_scores(scores: &mut HashMap<String, Team>, match_result: MatchResult) {
+    update_team_scores(
+        scores,
+        match_result.team_1_name,
+        Team {
+            goals_scored: match_result.team_1_score,
+            goals_conceded: match_result.team_2_score,
+        },
+    );
+
+    update_team_scores(
+        scores,
+        match_result.team_2_name,
+        Team {
+            goals_scored: match_result.team_2_score,
+            goals_conceded: match_result.team_1_score,
+        },
+    );
+}
+
+fn update_team_scores(scores: &mut HashMap<String, Team>, team_name: String, goals: Team) {
+    scores
+        .entry(team_name)
+        .and_modify(|team| {
+            team.goals_scored += goals.goals_scored;
+            team.goals_conceded += goals.goals_conceded;
+        })
+        .or_insert(Team {
+            goals_scored: goals.goals_scored,
+            goals_conceded: goals.goals_conceded,
+        });
 }
 
 #[cfg(test)]
