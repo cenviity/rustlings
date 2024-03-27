@@ -24,15 +24,15 @@ pub struct NotDivisibleError {
 // Calculate `a` divided by `b` if `a` is evenly divisible by `b`.
 // Otherwise, return a suitable error.
 pub fn divide(a: i32, b: i32) -> Result<i32, DivisionError> {
-    a.checked_rem(b)
-        .ok_or(DivisionError::DivideByZero)
-        .and_then(|remainder| match remainder {
-            0 => Ok(a / b),
-            _ => Err(DivisionError::NotDivisible(NotDivisibleError {
-                dividend: a,
-                divisor: b,
-            })),
-        })
+    let remainder = a.checked_rem(b).ok_or(DivisionError::DivideByZero)?;
+
+    match remainder {
+        0 => Ok(a / b),
+        _ => Err(DivisionError::NotDivisible(NotDivisibleError {
+            dividend: a,
+            divisor: b,
+        })),
+    }
 }
 
 // Complete the function and return a value of the correct type so the test
