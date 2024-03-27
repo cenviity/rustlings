@@ -54,7 +54,8 @@ fn count_collection_iterator(collection: &[HashMap<String, Progress>], value: Pr
     //     { "variables2": Complete, ... }, ... ]
     collection
         .iter()
-        .fold(0, |acc, map| acc + count_iterator(map, value))
+        .map(|map| count_iterator(map, value))
+        .sum()
 }
 
 #[cfg(test)]
