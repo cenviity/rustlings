@@ -48,10 +48,12 @@ impl From<&str> for Person {
     fn from(s: &str) -> Person {
         s.split_once(',')
             .and_then(|(name, age)| {
-                name.is_empty()
-                    .not()
-                    .then(|| String::from(name))
-                    .and_then(|name| age.parse().ok().map(|age| Person { name, age }))
+                age.parse().ok().and_then(|age| {
+                    name.is_empty()
+                        .not()
+                        .then(|| String::from(name))
+                        .map(|name| Person { name, age })
+                })
             })
             .unwrap_or(Person::default())
     }
