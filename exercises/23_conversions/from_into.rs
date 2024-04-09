@@ -7,6 +7,8 @@
 // Execute `rustlings hint from_into` or use the `hint` watch subcommand for a
 // hint.
 
+use std::ops::Not;
+
 #[derive(Debug)]
 struct Person {
     name: String,
@@ -44,16 +46,20 @@ impl Default for Person {
 
 impl From<&str> for Person {
     fn from(s: &str) -> Person {
-        (!s.is_empty()).then_some(s).map_or(Person::default(), |s| {
-            s.split_once(',').map_or(Person::default(), |(name, age)| {
-                (!name.is_empty())
-                    .then(|| String::from(name))
-                    .map_or(Person::default(), |name| {
-                        age.parse()
-                            .map_or(Person::default(), |age| Person { name, age })
-                    })
+        s.is_empty()
+            .not()
+            .then_some(s)
+            .map_or(Person::default(), |s| {
+                s.split_once(',').map_or(Person::default(), |(name, age)| {
+                    name.is_empty().not().then(|| String::from(name)).map_or(
+                        Person::default(),
+                        |name| {
+                            age.parse()
+                                .map_or(Person::default(), |age| Person { name, age })
+                        },
+                    )
+                })
             })
-        })
     }
 }
 
