@@ -56,7 +56,7 @@ impl FromStr for Person {
             .then_some(s)
             .ok_or(ParsePersonError::Empty)?;
 
-        let mut s_parts = &mut s.split(',');
+        let mut s_parts = s.split(',');
 
         let name = s_parts.next().ok_or(ParsePersonError::BadLen)?;
         let name = name
