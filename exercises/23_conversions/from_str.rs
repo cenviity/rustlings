@@ -56,12 +56,12 @@ impl FromStr for Person {
             .then_some(s)
             .ok_or(ParsePersonError::Empty)?;
 
-        if s.chars().filter(|&c| c == ',').count() != 1 {
+        let mut s_parts = &mut s.split(',');
+        let name = s_parts.next().ok_or(ParsePersonError::BadLen)?;
+        let age = s_parts.next().ok_or(ParsePersonError::BadLen)?;
+        if s_parts.next().is_some() {
             return Err(ParsePersonError::BadLen);
         }
-        let mut s_parts = &mut s.split(',');
-        let name = s_parts.next().unwrap();
-        let age = s_parts.next().unwrap();
 
         let name = name
             .is_empty()
