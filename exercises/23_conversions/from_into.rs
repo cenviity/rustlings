@@ -55,7 +55,7 @@ impl From<&str> for Person {
                         .map(|name| Person { name, age })
                 })
             })
-            .unwrap_or(Person::default())
+            .unwrap_or_default()
     }
 }
 
