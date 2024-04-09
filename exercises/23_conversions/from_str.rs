@@ -10,7 +10,6 @@
 // hint.
 
 use std::num::ParseIntError;
-use std::ops::Not;
 use std::str::FromStr;
 
 #[derive(Debug, PartialEq)]
@@ -50,20 +49,16 @@ impl FromStr for Person {
     type Err = ParsePersonError;
 
     fn from_str(s: &str) -> Result<Person, Self::Err> {
-        let s = s
-            .is_empty()
-            .not()
-            .then_some(s)
-            .ok_or(ParsePersonError::Empty)?;
+        if s.is_empty() {
+            return Err(ParsePersonError::Empty);
+        }
 
         let mut s_parts = s.split(',');
 
         let name = s_parts.next().ok_or(ParsePersonError::BadLen)?;
-        let name = name
-            .is_empty()
-            .not()
-            .then_some(name)
-            .ok_or(ParsePersonError::NoName)?;
+        if name.is_empty() {
+            return Err(ParsePersonError::NoName);
+        }
 
         let age = s_parts.next().ok_or(ParsePersonError::BadLen)?;
         let age = age.parse::<usize>().map_err(ParsePersonError::ParseInt)?;
