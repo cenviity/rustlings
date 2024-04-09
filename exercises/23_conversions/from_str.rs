@@ -10,6 +10,7 @@
 // hint.
 
 use std::num::ParseIntError;
+use std::ops::Not;
 use std::str::FromStr;
 
 #[derive(Debug, PartialEq)]
@@ -47,7 +48,33 @@ enum ParsePersonError {
 
 impl FromStr for Person {
     type Err = ParsePersonError;
+
     fn from_str(s: &str) -> Result<Person, Self::Err> {
+        let s = s
+            .is_empty()
+            .not()
+            .then_some(s)
+            .ok_or(ParsePersonError::Empty)?;
+
+        if s.chars().filter(|&c| c == ',').count() != 1 {
+            return Err(ParsePersonError::BadLen);
+        }
+        let mut s_parts = &mut s.split(',');
+        let name = s_parts.next().unwrap();
+        let age = s_parts.next().unwrap();
+
+        let name = name
+            .is_empty()
+            .not()
+            .then_some(name)
+            .ok_or(ParsePersonError::NoName)?;
+
+        let age = age.parse::<usize>().map_err(ParsePersonError::ParseInt)?;
+
+        Ok(Person {
+            name: String::from(name),
+            age,
+        })
     }
 }
 
