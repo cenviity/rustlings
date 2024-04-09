@@ -46,20 +46,14 @@ impl Default for Person {
 
 impl From<&str> for Person {
     fn from(s: &str) -> Person {
-        s.is_empty()
-            .not()
-            .then_some(s)
-            .map_or(Person::default(), |s| {
-                s.split_once(',').map_or(Person::default(), |(name, age)| {
-                    name.is_empty().not().then(|| String::from(name)).map_or(
-                        Person::default(),
-                        |name| {
-                            age.parse()
-                                .map_or(Person::default(), |age| Person { name, age })
-                        },
-                    )
-                })
+        s.split_once(',')
+            .and_then(|(name, age)| {
+                name.is_empty()
+                    .not()
+                    .then(|| String::from(name))
+                    .and_then(|name| age.parse().ok().map(|age| Person { name, age }))
             })
+            .unwrap_or(Person::default())
     }
 }
 
